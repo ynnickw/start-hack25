@@ -117,6 +117,25 @@ def calculate_frost_stress(weather_data: WeatherData, crop_temps: dict):
         S_frost = 9
     return S_frost
 
+def calculate_yield_risk(historical_data: HistoricalWeatherData, weather_data: WeatherData, optimal_values: dict):
+    # Optimal values for the crop
+    optimal_gdd = optimal_values["GDD"]
+    optimal_precip = optimal_values["Precip"]
+    optimal_ph = optimal_values["pH"]
+    optimal_n = optimal_values["N"]
+
+    # Actual values for the crop
+    actual_gdd = historical_data.GDD
+    actual_precip = weather_data.PRECIP
+    actual_ph = historical_data.ACTUAL_PH
+    actual_n = historical_data.ACTUAL_N
+
+    YR = (WEIGHTING_FACTORS["w1"] * (historical_data.GDD - optimal_gdd) ** 2 +
+          WEIGHTING_FACTORS["w2"] * (weather_data.PRECIP - optimal_precip) ** 2 +
+          WEIGHTING_FACTORS["w3"] * (actual_ph - optimal_ph) ** 2 +
+          WEIGHTING_FACTORS["w4"] * (actual_n - optimal_n) ** 2)
+    return YR
+
 @app.post("/calculate_risk")
 async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, historical_data: HistoricalWeatherData):
     crop_temps = CROP_TEMPERATURES.get(farmer_input.crop_type, {})
@@ -138,27 +157,10 @@ async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, h
 
     # Yield Risk Calculation
     optimal_values = CROP_OPTIMALS.get(farmer_input.crop_type, {"GDD": 0, "Precip": 0, "pH": 0, "N": 0})
-
-    # Optimal values for the crop
-    optimal_gdd = optimal_values["GDD"]
-    optimal_precip = optimal_values["Precip"]
-    optimal_ph = optimal_values["pH"]
-    optimal_n = optimal_values["N"]
-
-    # Actual values for the crop
-    actual_gdd = historical_data.GDD
-    actual_precip = weather_data.PRECIP
-    actual_ph = historical_data.ACTUAL_PH
-    actual_n = historical_data.ACTUAL_N
-
-
-    YR = (WEIGHTING_FACTORS["w1"] * (historical_data.GDD - optimal_gdd) ** 2 +
-          WEIGHTING_FACTORS["w2"] * (weather_data.PRECIP - optimal_precip) ** 2 +
-          WEIGHTING_FACTORS["w3"] * (actual_ph - optimal_ph) ** 2 +
-          WEIGHTING_FACTORS["w4"] * (actual_n - optimal_n) ** 2)
+    YR = calculate_yield_risk(historical_data, weather_data, optimal_values)
 
     # Decision Making
-    stress_buster_recommended = any([S_heat >= 5, S_night >= 5, S_frost >= 5, DI >= 5])
+    stress_buster_recommended = any([S_heat >= 5, S_night >= 5, S_frost >= 5, DI <= 1])
     yield_booster_recommended = YR > 10  # Example threshold
 
     return {
