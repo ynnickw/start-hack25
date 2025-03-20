@@ -25,10 +25,9 @@ class FarmerInput(BaseModel):
     latitude: float
     longitude: float
     crop_type: str
-    crop_stage: str
-    historical_yield: Optional[float] = None
     planting_date: date
-    growing_season: str
+    harvest_date: date
+    location: str
 
 
 def calculate_monthly_risk(weather_df):

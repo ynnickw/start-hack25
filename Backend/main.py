@@ -12,7 +12,7 @@ app = FastAPI()
 @app.post("/calculate-risk")
 def calculate_risk(farmer_input: FarmerInput):
     
-    weather_df = create_weather_dataframe(farmer_input.latitude, farmer_input.longitude, farmer_input.planting_date, farmer_input.planting_date, farmer_input.growing_season)
+    weather_df = create_weather_dataframe(farmer_input.latitude, farmer_input.longitude, farmer_input.planting_date, farmer_input.harvest_date, farmer_input.location)
 
     monthly_risk = calculate_monthly_risk(weather_df, farmer_input)
     periodly_risk = calculate_periodly_risk(weather_df, farmer_input)
