@@ -18,13 +18,20 @@ def calculate_risk(farmer_input: FarmerInput):
     periodly_risk = calculate_periodly_risk(weather_df, farmer_input)
     
 
-    # Decision Making
-    #stress_buster_recommended = any([S_heat >= 5, S_night >= 5, S_frost >= 5, DI <= 1])
-    #yield_booster_recommended = YR > 10  # Example threshold
+    stress_buster_recommended = any(
+        value > 0.5
+        for risk_factor in monthly_risk["risk_factors"].values()
+        for value in risk_factor.values()
+    )
+
+    yield_booster_recommended = any(
+        value > 0.5
+        for value in periodly_risk.values()
+    )
 
     return {
-        "stress_buster_recommended": 'true',
-        "yield_booster_recommended": 'false',
+        "stress_buster_recommended": stress_buster_recommended,
+        "yield_booster_recommended": yield_booster_recommended,
         "risk_factors": {
            "monthly_risk": monthly_risk,
            "periodly_risk": periodly_risk
