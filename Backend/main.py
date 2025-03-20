@@ -137,8 +137,7 @@ def calculate_yield_risk(historical_data: HistoricalWeatherData, weather_data: W
           WEIGHTING_FACTORS["w4"] * (actual_n - optimal_n) ** 2)
     return YR
 
-@app.post("/calculate_risk")
-async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, historical_data: HistoricalWeatherData):
+def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, historical_data: HistoricalWeatherData):
     crop_temps = CROP_TEMPERATURES.get(farmer_input.crop_type, {})
     if not crop_temps:
         raise HTTPException(status_code=400, detail="Unsupported crop type")
