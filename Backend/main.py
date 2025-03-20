@@ -12,8 +12,10 @@ class FarmerInput(BaseModel):
     crop_stage: str
     historical_yield: Optional[float] = None
     planting_date: date
+    growing_season: str
     
 
+# Weather Data over growing season
 class WeatherData(BaseModel):
     TMAX: float
     TMIN: float
@@ -22,8 +24,19 @@ class WeatherData(BaseModel):
     WIND_SPEED: float
     EVAPOTRANSPIRATION: float
 
+# Historical Weather Data over growing season
 class HistoricalWeatherData(BaseModel):
+    #Cumulative rainfall (mm) over last growing season
+    P_RAINFALL: float
+    #Cumulative evapotranspiration (mm) over last growing season
+    E_EVAPORATION: float
+    #Cumulative soil moisture (mm) over last growing season
+    SM_SOIL_MOISTURE: float
+    #Average temperature (C) over last growing season
+    AVG_TEMP: float
     GDD: float
+    ACTUAL_PH: float
+    ACTUAL_N: float
     RAINFALL_HISTORY: float
     FROST_OCCURRENCES: int
 
@@ -56,12 +69,19 @@ CROP_TEMPERATURES = {
     # Add other crops with their respective temperature values
 }
 
+# Define optimal GDD and precipitation for each crop type
+CROP_OPTIMALS = {
+    "Cotton": {"GDD": 2400, "Precip": 1000, "pH": 6.25, "N": 0.026},
+    "Rice": {"GDD": 2250, "Precip": 1250, "pH": 5.0, "N": 0.0715},
+    "Wheat": {"GDD": 2250, "Precip": 1250, "pH": 5.0, "N": 0.077}
+}
+
 # Define weighting factors for yield risk calculation
 WEIGHTING_FACTORS = {
-    "w1": 0.25,
-    "w2": 0.25,
-    "w3": 0.25,
-    "w4": 0.25
+    "w1": 0.3,
+    "w2": 0.3,
+    "w3": 0.2,
+    "w4": 0.2
 }
 
 def calculate_heat_stress(weather_data: WeatherData, crop_temps: dict):
@@ -113,14 +133,29 @@ async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, h
     # Frost Stress Calculation
     S_frost = calculate_frost_stress(weather_data, crop_temps)
 
-
-    DI = (weather_data.PRECIP - weather_data.EVAPOTRANSPIRATION) + weather_data.TMAX
+    # Drought Index Calculation
+    DI = (historical_data.P_RAINFALL - historical_data.E_EVAPORATION) + historical_data.SM_SOIL_MOISTURE / historical_data.AVG_TEMP
 
     # Yield Risk Calculation
-    YR = (WEIGHTING_FACTORS["w1"] * (historical_data.GDD - 1000) ** 2 +
-          WEIGHTING_FACTORS["w2"] * (weather_data.PRECIP - 500) ** 2 +
-          WEIGHTING_FACTORS["w3"] * (weather_data.TMAX - crop_temps["TMaxOptimum"]) ** 2 +
-          WEIGHTING_FACTORS["w4"] * (weather_data.TMIN - crop_temps["TMinOptimum"]) ** 2)
+    optimal_values = CROP_OPTIMALS.get(farmer_input.crop_type, {"GDD": 0, "Precip": 0, "pH": 0, "N": 0})
+
+    # Optimal values for the crop
+    optimal_gdd = optimal_values["GDD"]
+    optimal_precip = optimal_values["Precip"]
+    optimal_ph = optimal_values["pH"]
+    optimal_n = optimal_values["N"]
+
+    # Actual values for the crop
+    actual_gdd = historical_data.GDD
+    actual_precip = weather_data.PRECIP
+    actual_ph = historical_data.ACTUAL_PH
+    actual_n = historical_data.ACTUAL_N
+
+
+    YR = (WEIGHTING_FACTORS["w1"] * (historical_data.GDD - optimal_gdd) ** 2 +
+          WEIGHTING_FACTORS["w2"] * (weather_data.PRECIP - optimal_precip) ** 2 +
+          WEIGHTING_FACTORS["w3"] * (actual_ph - optimal_ph) ** 2 +
+          WEIGHTING_FACTORS["w4"] * (actual_n - optimal_n) ** 2)
 
     # Decision Making
     stress_buster_recommended = any([S_heat >= 5, S_night >= 5, S_frost >= 5, DI >= 5])
