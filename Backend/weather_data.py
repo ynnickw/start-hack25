@@ -120,10 +120,10 @@ def get_historical_daily_temperatures(api_key, latitude, longitude, start_date, 
 if __name__ == "__main__":
     # Example parameters
     api_key = "7b29a207a0de"  # Historical Token from Postman
-    latitude = 47.558399
-    longitude = 7.57327
-    start_date = "2023-01-01"
-    end_date = "2023-01-31"
+    latitude = 49.558399
+    longitude = 77.57327
+    start_date = "2023-08-01"
+    end_date = "2023-08-31"
    
     try:
         # Call the function

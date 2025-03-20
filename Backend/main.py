@@ -20,8 +20,6 @@ class WeatherData(BaseModel):
     TMAX: float
     TMIN: float
     PRECIP: float
-    HUMIDITY: float
-    WIND_SPEED: float
     EVAPOTRANSPIRATION: float
 
 # Historical Weather Data over growing season
@@ -137,6 +135,9 @@ def calculate_yield_risk(historical_data: HistoricalWeatherData, weather_data: W
           WEIGHTING_FACTORS["w4"] * (actual_n - optimal_n) ** 2)
     return YR
 
+def calculate_drought_index(historical_data: HistoricalWeatherData):
+    return (historical_data.P_RAINFALL - historical_data.E_EVAPORATION) + historical_data.SM_SOIL_MOISTURE / historical_data.AVG_TEMP
+
 def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, historical_data: HistoricalWeatherData):
     crop_temps = CROP_TEMPERATURES.get(farmer_input.crop_type, {})
     if not crop_temps:
@@ -153,7 +154,7 @@ def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, histori
     S_frost = calculate_frost_stress(weather_data, crop_temps)
 
     # Drought Index Calculation
-    DI = (historical_data.P_RAINFALL - historical_data.E_EVAPORATION) + historical_data.SM_SOIL_MOISTURE / historical_data.AVG_TEMP
+    DI = calculate_drought_index(historical_data)
 
     # Yield Risk Calculation
     optimal_values = CROP_OPTIMALS.get(farmer_input.crop_type, {"GDD": 0, "Precip": 0, "pH": 0, "N": 0})
