@@ -2,10 +2,13 @@ from weather_data_to_dataframe import create_weather_dataframe
 import pandas as pd
 from extract_weather_data import extract_weather_data_for_day
 from daily_risk_service import calculate_heat_stress, calculate_frost_stress
-from main import FarmerInput
 from periodly_risk_service import calculate_drought_index, HistoricalWeatherData, calculate_drought_risk_adjusted, calculate_yield_risk
 from datetime import date
 import json  # Add this import at the top of your file
+
+from pydantic import BaseModel
+from typing import Optional
+
 
 
 
@@ -18,19 +21,19 @@ def power_mean(series, p=3):
 #longitude=7.57327,   # Example longitude
 
 # Create a FarmerInput instance (you need to provide the necessary data)
-farmer_input = FarmerInput(
-    latitude=38.558399,  # Example latitude
-    longitude=-98.57327,   # Example longitude
-    crop_type="Rice",   # Example crop type
-    crop_stage="Growth", # Example crop stage
-    planting_date=date(2023, 1, 1),  # Example planting date
-    growing_season="Spring"  # Example growing season
-)
-weather_df = create_weather_dataframe()
+class FarmerInput(BaseModel):
+    latitude: float
+    longitude: float
+    crop_type: str
+    crop_stage: str
+    historical_yield: Optional[float] = None
+    planting_date: date
+    growing_season: str
 
 
-def calculate_monthly_risk(farmer_input: FarmerInput):
+def calculate_monthly_risk(weather_df):
     # Call the function to create the DataFrame
+
    
     print('weather_df: ', weather_df)
 
@@ -74,7 +77,7 @@ def calculate_monthly_risk(farmer_input: FarmerInput):
 
 
 
-def calculate_periodly_risk(farmer_input: FarmerInput):
+def calculate_periodly_risk(weather_df, farmer_input):
     historical_weather_data = HistoricalWeatherData(
         P_RAINFALL=weather_df['Precipitation Total_sum'].sum(),
         E_EVAPORATION=weather_df['Evapotranspiration_sum'].sum(),
@@ -90,9 +93,6 @@ def calculate_periodly_risk(farmer_input: FarmerInput):
 
 
 
-print(calculate_monthly_risk(farmer_input))
-
-print(calculate_periodly_risk(farmer_input))
 
 
 

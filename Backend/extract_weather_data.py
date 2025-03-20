@@ -1,10 +1,34 @@
 import pandas as pd
 from datetime import datetime
-from weather_data_to_dataframe import weather_df
-from main import WeatherData, HistoricalWeatherData
+from pydantic import BaseModel
+
+
+class WeatherData(BaseModel):
+    TMAX: float
+    TMIN: float
+    PRECIP: float
+    EVAPOTRANSPIRATION: float
+
+    # Historical Weather Data over growing season
+class HistoricalWeatherData(BaseModel):
+    #Cumulative rainfall (mm) over last growing season
+    P_RAINFALL: float
+    #Cumulative evapotranspiration (mm) over last growing season
+    E_EVAPORATION: float
+    #Cumulative soil moisture (mm) over last growing season
+    SM_SOIL_MOISTURE: float
+    #Average temperature (C) over last growing season
+    AVG_TEMP: float
+    
+    GDD: float
+    ACTUAL_PH: float
+    ACTUAL_N: float
+    RAINFALL_HISTORY: float
+    FROST_OCCURRENCES: int
+
 
 # Function to extract weather data for a specific day
-def extract_weather_data_for_day(date_str):
+def extract_weather_data_for_day(date_str, weather_df):
    # print(date_str)
     # Convert the date string to a datetime object
     #date_obj = datetime.strptime(date_str, '%Y%m%dT%H%M')
@@ -15,6 +39,9 @@ def extract_weather_data_for_day(date_str):
     #print(formatted_date)
     # Extract the data for the specific day
     day_data = weather_df.loc[date_str]
+
+
+
     
     # Create WeatherData instance
     weather_data = WeatherData(

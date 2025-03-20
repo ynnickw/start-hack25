@@ -2,7 +2,7 @@ import pandas as pd
 
 from weather_data import get_historical_daily_temperatures
 
-def create_weather_dataframe():
+def create_weather_dataframe(latitude, longitude, start_date, end_date, location):
 
 
     # Sample data good for heat test
@@ -13,10 +13,11 @@ def create_weather_dataframe():
     #end_date = "2023-08-31", location="")
 
     sample_data = get_historical_daily_temperatures(api_key = "7b29a207a0de",  # Historical Token from Postman
-    latitude = 22.058399,
-    longitude = 88.87327,
-    start_date = "2023-08-01",
-    end_date = "2023-12-31", location="")
+    latitude = latitude,
+    longitude =longitude,
+    start_date = start_date,
+    end_date = end_date, 
+    location=location)
 
     # Extract time intervals
     intervals = sample_data[0]['timeIntervals'][0]
@@ -44,5 +45,5 @@ def create_weather_dataframe():
     return weather_df
 
 # Call the function and print the DataFrame
-weather_df = create_weather_dataframe()
-print(weather_df) 
+#weather_df = create_weather_dataframe()
+#print(weather_df) 
