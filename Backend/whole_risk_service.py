@@ -30,7 +30,7 @@ class FarmerInput(BaseModel):
     location: str
 
 
-def calculate_monthly_risk(weather_df):
+def calculate_monthly_risk(weather_df, farmer_input):
     # Call the function to create the DataFrame
 
    
@@ -43,7 +43,7 @@ def calculate_monthly_risk(weather_df):
     # Iterate over each day in the dataframe
     for date_str in weather_df.index:
         # Extract weather data for the specific day
-        weather_data, historical_weather_data = extract_weather_data_for_day(date_str)
+        weather_data, historical_weather_data = extract_weather_data_for_day(date_str, weather_df)
        
 
         # Call the risk calculation function

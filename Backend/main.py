@@ -26,7 +26,7 @@ def calculate_risk(farmer_input: FarmerInput):
         "stress_buster_recommended": 'true',
         "yield_booster_recommended": 'false',
         "risk_factors": {
-           monthly_risk,
-           periodly_risk
+           "monthly_risk": monthly_risk,
+           "periodly_risk": periodly_risk
         }
     } 
