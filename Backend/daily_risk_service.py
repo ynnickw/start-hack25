@@ -51,6 +51,8 @@ def calculate_heat_stress(weather_data: WeatherData, crop_type: str):
     elif weather_data.TMAX >= crop_temps["TMaxLimit"]:
         S_heat = 9
 
+    if(S_heat > 9):
+        S_heat = 9
 
     
     # Calculate night stress
@@ -62,7 +64,13 @@ def calculate_heat_stress(weather_data: WeatherData, crop_type: str):
     elif weather_data.TMIN >= crop_temps["TMinLimit"]:
         S_night = 9
 
+    if(S_night > 9):
+        S_night = 9
+
     S_frost = calculate_frost_stress(weather_data, crop_temps)
+    
+    if(S_frost > 9):
+        S_frost = 9
 
     return S_heat, S_night, S_frost
 

@@ -6,6 +6,10 @@ from main import FarmerInput
 from datetime import date
 
 
+def power_mean(series, p=3):
+    return ((series.pow(p).mean()) ** (1 / p))/9
+
+
 #good for heat
 #latitude=47.558399,  # Example latitude
 #longitude=7.57327,   # Example longitude
@@ -22,10 +26,11 @@ farmer_input = FarmerInput(
 
 # Call the function to create the DataFrame
 weather_df = create_weather_dataframe()
-
+print('weather_df: ', weather_df)
 
 # Create a list to store the results
 results = []
+
 
 # Iterate over each day in the dataframe
 for date_str in weather_df.index:
@@ -34,24 +39,35 @@ for date_str in weather_df.index:
     print('weather_data: ', weather_data)
     print('historical_weather_data: ', historical_weather_data)
     
-    
-
-       
-
-    
     # Call the risk calculation function
     risk_result = calculate_heat_stress(weather_data, farmer_input.crop_type)
 
     print('Risk Result: ', risk_result)
     
     # Append the result to the list
-    results.append(risk_result)
+    results.append((date_str, *risk_result))
 
 # Convert the results list to a DataFrame
-risk_df = pd.DataFrame(results)
+risk_df = pd.DataFrame(results, columns=[ "DATE", "S_heat", "S_night", "S_frost"])
+
+
+
+
+risk_df.set_index('DATE', inplace=True)
+
+risk_factors = risk_df.groupby(risk_df.index.to_period("M")).apply(lambda df: df.apply(lambda col: power_mean(col, p=3)))
+
 
 # Print the new DataFrame
 print('risk_df: ', risk_df)
+
+power_mean_series = risk_df.copy().apply(lambda col: power_mean(col, p=3))
+
+
+print('power_mean_series: ', power_mean_series.to_json())
+
+print('risk_factors: ', risk_factors.to_json())
+
 
 
 

@@ -15,7 +15,7 @@ def create_weather_dataframe():
     sample_data = get_historical_daily_temperatures(api_key = "7b29a207a0de",  # Historical Token from Postman
     latitude = 55.558399,
     longitude = 37.57327,
-    start_date = "2023-12-01",
+    start_date = "2023-08-01",
     end_date = "2023-12-31", location="")
 
     # Extract time intervals
@@ -38,6 +38,8 @@ def create_weather_dataframe():
     # Create DataFrame
     weather_df = pd.DataFrame(weather_dict)
     weather_df.set_index('TimeInterval', inplace=True)
+    weather_df.index = pd.to_datetime(weather_df.index.str[:8], format="%Y%m%d")
+
     return weather_df
 
 # Call the function and print the DataFrame
