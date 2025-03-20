@@ -30,28 +30,28 @@ class HistoricalWeatherData(BaseModel):
 # Define optimal and limit temperatures for each crop type
 CROP_TEMPERATURES = {
     "Cotton": {
-        "TMaxOptimum": 35.0,
-        "TMaxLimit": 45.0,
-        "TMinOptimum": 25.0,
-        "TMinLimit": 15.0,
-        "TMinNoFrost": 10.0,
+        "TMaxOptimum": 32.0,
+        "TMaxLimit": 38.0,
+        "TMinOptimum": 20.0,
+        "TMinLimit": 25.0,
+        "TMinNoFrost": 4.0,
         "TminFrost": 5.0
     },
     "Rice": {
         "TMaxOptimum": 32.0,
-        "TMaxLimit": 42.0,
+        "TMaxLimit": 38.0,
         "TMinOptimum": 22.0,
-        "TMinLimit": 12.0,
-        "TMinNoFrost": 7.0,
-        "TminFrost": 2.0
+        "TMinLimit": 28.0,
+        "TMinNoFrost": None,
+        "TminFrost": None
     },
     "Wheat": {
         "TMaxOptimum": 25.0,
-        "TMaxLimit": 35.0,
+        "TMaxLimit": 32.0,
         "TMinOptimum": 15.0,
-        "TMinLimit": 5.0,
-        "TMinNoFrost": 0.0,
-        "TminFrost": -5.0
+        "TMinLimit": 20.0,
+        "TMinNoFrost": None,
+        "TminFrost": None
     },
     # Add other crops with their respective temperature values
 }
@@ -64,8 +64,38 @@ WEIGHTING_FACTORS = {
     "w4": 0.25
 }
 
-def calculate_heat_stress(TMAX, TMaxOptimum, TMaxLimit):
+def calculate_heat_stress(weather_data: WeatherData, crop_temps: dict):
+    # Calculate diurnal heat stress
+    S_heat = 0
+    if weather_data.TMAX <= crop_temps["TMaxOptimum"]:
+        S_heat = 0
+    elif crop_temps["TMaxOptimum"] < weather_data.TMAX < crop_temps["TMaxLimit"]:
+        S_heat = 9 * (weather_data.TMAX - crop_temps["TMaxOptimum"]) / (crop_temps["TMaxLimit"] - crop_temps["TMaxOptimum"])
+    elif weather_data.TMAX >= crop_temps["TMaxLimit"]:
+        S_heat = 9
+
+
     
+    # Calculate night stress
+    S_night = 0
+    if weather_data.TMIN < crop_temps["TMinOptimum"]:
+        S_night = 0
+    elif crop_temps["TMinOptimum"] <= weather_data.TMIN < crop_temps["TMinLimit"]:
+        S_night = 9 * (weather_data.TMIN - crop_temps["TMinOptimum"]) / (crop_temps["TMinLimit"] - crop_temps["TMinOptimum"])
+    elif weather_data.TMIN >= crop_temps["TMinLimit"]:
+        S_night = 9
+
+    return S_heat, S_night
+
+def calculate_frost_stress(weather_data: WeatherData, crop_temps: dict):
+    S_frost = 0
+    if weather_data.TMIN >= crop_temps["TMinNoFrost"]:
+        S_frost = 0
+    elif weather_data.TMIN < crop_temps["TMinNoFrost"]:
+        S_frost = 9 * abs(weather_data.TMIN - crop_temps["TMinNoFrost"]) / abs(crop_temps["TminFrost"] - crop_temps["TMinNoFrost"])
+    elif weather_data.TMIN <= crop_temps["TminFrost"]:
+        S_frost = 9
+    return S_frost
 
 @app.post("/calculate_risk")
 async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, historical_data: HistoricalWeatherData):
@@ -78,11 +108,12 @@ async def calculate_risk(farmer_input: FarmerInput, weather_data: WeatherData, h
     # Use days_since_planting in risk calculations if needed
 
     # Abiotic Stress Risk Calculations
-    S_heat = 9 * (weather_data.TMAX - crop_temps["TMaxOptimum"]) / (crop_temps["TMaxLimit"] - crop_temps["TMaxOptimum"])
-    S_night = 9 * (weather_data.TMIN - crop_temps["TMinOptimum"]) / (crop_temps["TMinLimit"] - crop_temps["TMinOptimum"])
-    S_frost = 0
-    if weather_data.TMIN <= 4:
-        S_frost = 9 * abs(weather_data.TMIN - crop_temps["TMinNoFrost"]) / abs(crop_temps["TminFrost"] - crop_temps["TMinNoFrost"])
+    S_heat, S_night = calculate_heat_stress(weather_data, crop_temps)
+
+    # Frost Stress Calculation
+    S_frost = calculate_frost_stress(weather_data, crop_temps)
+
+
     DI = (weather_data.PRECIP - weather_data.EVAPOTRANSPIRATION) + weather_data.TMAX
 
     # Yield Risk Calculation
