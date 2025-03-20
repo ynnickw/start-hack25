@@ -34,6 +34,7 @@ class HistoricalWeatherData(BaseModel):
     SM_SOIL_MOISTURE: float
     #Average temperature (C) over last growing season
     AVG_TEMP: float
+    
     GDD: float
     ACTUAL_PH: float
     ACTUAL_N: float
