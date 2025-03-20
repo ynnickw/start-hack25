@@ -32,7 +32,7 @@ def extract_weather_data_for_day(date_str):
         AVG_TEMP=(day_data['Temperature_max'] + day_data['Temperature_min']) / 2,
         GDD=0,  # Placeholder, calculate if needed
         ACTUAL_PH=0,  # Placeholder, replace with actual data if available
-        ACTUAL_N=day_data['Nitrogen'],
+        ACTUAL_N=day_data['Total Nitrogen Content'],
         RAINFALL_HISTORY=0,  # Placeholder, replace with actual data if available
         FROST_OCCURRENCES=0  # Placeholder, calculate if needed
     )

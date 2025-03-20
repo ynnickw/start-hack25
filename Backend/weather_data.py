@@ -106,6 +106,10 @@ def get_historical_daily_temperatures(api_key, latitude, longitude, start_date, 
                     {
                         "code": 817,
                         "level": "0-20 cm"
+                    },
+                    {
+                        "code": 812,
+                        "level": "0-20 cm"
                     }
                 ]
             }
