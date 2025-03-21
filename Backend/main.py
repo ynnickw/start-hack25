@@ -32,7 +32,7 @@ def calculate_risk(farmer_input: FarmerInput):
     )
 
     yield_booster_recommended = any(
-        value > 0.5
+        value > 0.2
         for value in periodly_risk.values()
     )
 
