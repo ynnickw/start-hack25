@@ -163,3 +163,6 @@
     60% { transform: translateY(-5px); }
   }
   
+  .ant-pro-chat-chat-list-container {
+    height: 82% !important
+  }
