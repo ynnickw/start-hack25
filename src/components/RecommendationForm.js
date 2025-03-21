@@ -21,7 +21,7 @@ const RecommendationForm = ({ step, formData, setFormData, setStep, handleSubmit
                 setSearchResults([]);
             }
             setIsTyping(false);
-        }, 2000);
+        }, 1000);
 
         return () => clearTimeout(searchTimeout);
     }, [searchQuery, isTyping]);
