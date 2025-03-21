@@ -4,23 +4,27 @@ import DashboardHeader from "./DashboardHeader";
 import Timeline from "./Timeline";
 import RiskCard from "./RiskCard";
 import LongRisks from "./LongRisks";
-import { TrendingUp, ShieldCheck, Sun, CloudRain, Thermometer } from "lucide-react";
+import { TrendingUp, ShieldCheck, Sun, Moon, Thermometer } from "lucide-react";
 import { motion } from "framer-motion";
 
 const riskIcons = {
   S_heat: { icon: <Sun className="w-5 h-5" />, name: "Heat Stress", description: "Reduced plant growth from excess heat."},
-  S_night: { icon: <CloudRain className="w-5 h-5" />, name: "Night Stress", description: "Reduced plant recovery due to warm nights"},
+  S_night: { icon: <Moon className="w-5 h-5" />, name: "Night Stress", description: "Reduced plant recovery due to warm nights"},
   S_frost: { icon: <Thermometer className="w-5 h-5" />, name: "Frost Stress", description: "Plant damage from freezing temperatures."},
 };
 
 
 const Dashboard = ({ apiResults, formData }) => {
-  console.log(apiResults)
   const uniqueMonths = Object.keys(apiResults?.risk_factors?.S_heat || {});
-  const currentMonthYear = new Date().toISOString().slice(0, 7); 
-
+  const now = new Date();
+  now.setFullYear(now.getFullYear() - 1);
+  const currentMonthYear = now.toISOString().slice(0, 7); 
+  
+  console.log(currentMonthYear)
+  console.log(uniqueMonths)
   // Find the index of the current month in the array, or return -1 if not found
   const currentMonthIndex = uniqueMonths.indexOf(currentMonthYear);
+  console.log(currentMonthIndex)
     // Process the API response to create the months array
   const months = uniqueMonths.map((monthYear) => {
     const [year, month] = monthYear.split("-");
@@ -76,7 +80,7 @@ const Dashboard = ({ apiResults, formData }) => {
     },
     {
       id: 2,
-      title: "Yield Buster",
+      title: "Yield Booster",
       description: "Enhances nutrient transport, boosts growth, and maximizes crop yield.",
       icon: <TrendingUp className="w-5 h-5" />,
       riskLevel: apiResults?.yield_booster_recommended ? "low" : "none",
@@ -96,7 +100,7 @@ const Dashboard = ({ apiResults, formData }) => {
   };
 
   return (
-    <div className="bg-background overflow-y-auto">
+    <div className="bg-background overflow-y-auto mb-6">
       <DashboardHeader farmName={"Summary for your Farm in " + formData.location.name + " 🇮🇳"} cropType={formData.cropType} />
 
       <Separator className="my-4" />

@@ -14,7 +14,7 @@ const Chatbot = ({ apiResults, formData }) => {
     const [documentContext, setDocumentContext] = useState("");
 
     const generateHelloMessage = () => {
-        const crop = apiResults.crop;
+        const crop = formData.cropType;
         const hasStressBooster = apiResults.stress_buster_recommended;
         const hasYieldBooster = apiResults.yield_booster_recommended;
 
@@ -69,13 +69,28 @@ const Chatbot = ({ apiResults, formData }) => {
         }
     };
 
-    const promptPrefix = `
-        You are a highly experienced farming expert and a knowledgeable salesman specializing in agricultural products. 
-        Your client is an Indian farmer located in ${formData.location.name}, growing ${apiResults.crop}. 
-        The farmer's crop cycle runs from ${formData.startTimestamp} to ${formData.endTimestamp}.
-        The following products have been recommended based on real data: any other product is irrelevant to the farmer: ${apiResults.stress_buster_recommended ? 'STRESS BUSTER ' : ''} ${apiResults.yield_booster_recommended ? 'YIELD BOOSTER' : ''}.
-        The following stress factors and yield risk metric have been found for each month: 
-        [MATRIX EACH MONTH, RISK FACTORS]`
+    const promptPrefix = `You are a highly experienced agricultural expert and a persuasive, knowledgeable salesman specializing in agricultural products. Your client is an Indian farmer based in ${formData.location.name}, currently growing ${formData.cropType}. The crop cycle spans from ${formData.startTimestamp} to ${formData.endTimestamp}.
+                Based on real agronomic and environmental data, only the following products are relevant and should be recommended:
+
+                ${apiResults.stress_buster_recommended ? 'STRESS BUSTER' : ''}
+                ${apiResults.yield_booster_recommended ? 'YIELD BOOSTER' : ''}
+                Any other product is irrelevant and should not be mentioned.
+
+                You have access to detailed monthly risk analysis values, which help guide your recommendations:
+
+                Daytime heat stress risk (0 = low, 1 = high): ${JSON.stringify(apiResults.risk_factors.S_heat)}
+                Nighttime heat stress risk: ${JSON.stringify(apiResults.risk_factors.S_night)}
+                Frost stress: ${JSON.stringify(apiResults.risk_factors.S_frost)}
+                Risk levels:
+
+                0.0 – 0.4 → No real risk
+                0.4 – 0.7 → Moderate risk
+                0.7 – 1.0 → High risk
+                You are also given overall crop-season risks:
+
+                Drought risk: ${apiResults.risk_factors.drought_risk}
+                Yield risk: ${apiResults.risk_factors.yield_risk}
+                Your task: Write a personalized, expert-level product recommendation for this farmer. Explain clearly why the recommended product(s) are useful, how they align with the identified risks, and give actionable advice. Use a friendly but professional tone, similar to how a trusted local agronomist would speak.`
 
     // Load .txt file and format the content
     useEffect(() => {
@@ -99,7 +114,7 @@ const Chatbot = ({ apiResults, formData }) => {
                 title: "Farmer",
             }}
             assistantMeta={{
-                avatar: "🤖",
+                avatar: "🌻",
                 title: "Farm Assistant",
             }}
             request={async (messages) => {

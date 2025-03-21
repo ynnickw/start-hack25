@@ -110,7 +110,6 @@ Cold temperatures before crop maturity can result in significant yield loss. Fro
   9 × [ABS(TMIN - TMinNoFrost) / ABS(TminFrost - TMinNoFrost)]  
 Severe frost stress if TMIN ≤ TminFrost (stress level = 9).  
 
-For Wheat and Rice, frost stress is not applicable 
 For Cotton: TMinNoFrost = 4°C, TminFrost = -3°C  
 
 Final frost stress equation: 9 × [ABS(TMIN - 4) / ABS(-3 - 4)]

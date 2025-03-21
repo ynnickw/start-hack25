@@ -7,7 +7,7 @@ function ResultPage({ apiResults, formData }) {
     <div className="flex h-[90vh] w-full justify-center items-center gap-4 p-4">
       {/* Left Card: Chat Component (40%) */}
       <div className="w-2/5 bg-white shadow-lg rounded-lg p-6 flex flex-col h-full">
-        <h2 className="text-3xl font-semibold mb-4">Syngenta Product Specialist</h2>
+        <h2 className="text-3xl font-semibold mb-4">Personal Assistant</h2>
         <div className="flex-grow h-full">
           <Chatbot apiResults={apiResults} formData={formData} />
         </div>
