@@ -4,10 +4,17 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 from whole_risk_service import calculate_monthly_risk, calculate_periodly_risk, FarmerInput
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.post("/calculate-risk")
 def calculate_risk(farmer_input: FarmerInput):
@@ -20,7 +27,7 @@ def calculate_risk(farmer_input: FarmerInput):
 
     stress_buster_recommended = any(
         value > 0.5
-        for risk_factor in monthly_risk["risk_factors"].values()
+        for risk_factor in monthly_risk.values()
         for value in risk_factor.values()
     )
 
@@ -32,8 +39,5 @@ def calculate_risk(farmer_input: FarmerInput):
     return {
         "stress_buster_recommended": stress_buster_recommended,
         "yield_booster_recommended": yield_booster_recommended,
-        "risk_factors": {
-           "monthly_risk": monthly_risk,
-           "periodly_risk": periodly_risk
-        }
+        "risk_factors": {**monthly_risk, **periodly_risk}
     } 

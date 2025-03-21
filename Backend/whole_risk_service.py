@@ -71,7 +71,7 @@ def calculate_monthly_risk(weather_df, farmer_input):
     power_mean_series = risk_df.copy().apply(lambda col: power_mean(col, p=3))
 
 
-    return {"risk_factors": json.loads(risk_factors.to_json())}
+    return json.loads(risk_factors.to_json())
     
 
 
