@@ -1,26 +1,15 @@
-# Client Application
+# Nature Helps Nature: AI-Driven Agricultural Optimization
 
-## Installation
+_This project proudly secured second place in the Syngenta Challenge at the START Global 2025 Hackathon._
 
-To install the client application, please nstall the dependencies:
-   ```bash
-   npm install
-   ```
+## Overview
 
-## Starting the Client
+This project leverages artificial intelligence to empower farmers in India and Brazil with tailored recommendations for biological products, optimizing crop health and promoting sustainability. By integrating environmental data, product information, and agronomic algorithms, the solution offers:
 
-To start the client application, run the following command:
-```bash
-npm start
-```
-## Environment Variables
+- **Risk Visualization**: Insights into climate, soil, and disease risks specific to individual fields and crops.
+- **Product Recommendations**: Customized suggestions for biological products best suited to the farmer's specific conditions.
+- **Outcome Tracking**: Monitoring and analysis of crop performance to refine future recommendations.
 
-Create a .env.local file ith environment variables
+## Problem Statement
 
-REACT_APP_OPENCAGE_API_KEY=key
-REACT_APP_OPENAI_API_KEY=key
-
-which are api keys for open ai and open cage. See.env file for reference
-
-
-You can then access the application at `http://localhost:3000` (or the appropriate URL).
+Farmers often face challenges in selecting appropriate biological products due to limited understanding of product efficacy across diverse climates, soil types, and conditions. This can lead to suboptimal yields and increased vulnerability to environmental stresses. By leveraging AI, this project aims to bridge this knowledge gap, enabling farmers to make informed decisions that promote crop health and sustainability.
