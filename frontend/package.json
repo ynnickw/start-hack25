@@ -5,6 +5,9 @@
   "dependencies": {
     "@ant-design/pro-chat": "^1.15.3",
     "@assistant-ui/react": "^0.8.6",
+    "@aws-crypto/sha256-browser": "^5.2.0",
+    "@aws-sdk/protocol-http": "^3.370.0",
+    "@aws-sdk/signature-v4": "^3.370.0",
     "@chatscope/chat-ui-kit-react": "^2.0.3",
     "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@radix-ui/react-progress": "^1.1.2",

@@ -5,8 +5,9 @@ from typing import Optional
 from datetime import date
 from whole_risk_service import calculate_monthly_risk, calculate_periodly_risk, FarmerInput
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
-app = FastAPI()
+app = FastAPI(root_path="/default")
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,4 +41,7 @@ def calculate_risk(farmer_input: FarmerInput):
         "stress_buster_recommended": stress_buster_recommended,
         "yield_booster_recommended": yield_booster_recommended,
         "risk_factors": {**monthly_risk, **periodly_risk}
-    } 
+    }
+
+# Add Lambda handler
+handler = Mangum(app) 

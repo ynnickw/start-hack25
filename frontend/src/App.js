@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import syngentaLogo from "./assets/syngenta-logo.png";
 import RecommendationForm from "./components/RecommendationForm";
 import ResultPage from "./components/ResultPage";
+import api from './api/axios';
 
 function App() {
   const [showForm, setShowForm] = useState(false);
@@ -19,15 +20,13 @@ function App() {
 
   const handleSubmit = async () => {
     try {
-      const apiUrl = "http://localhost:8000/calculate-risk"; // Adjust the endpoint if necessary
       // Parse startTimestamp and endTimestamp to extract the year
       const startDate = new Date(formData.startTimestamp);
-      const startYear = startDate.getFullYear() - 1; // Subtract 1 from the year
+      const startYear = startDate.getFullYear() - 1;
       const formattedStartDate = `${startYear}-${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`;
 
-      // Extract year from endTimestamp and subtract 1
       const endYear = parseInt(formData.endTimestamp.split("-")[0], 10) - 1;
-      const formattedEndDate = `${endYear}-${formData.endTimestamp.split("-")[1]}-27`; // Assuming the last day of the month
+      const formattedEndDate = `${endYear}-${formData.endTimestamp.split("-")[1]}-27`;
 
       const requestBody = {
         latitude: formData.location.lat,
@@ -37,22 +36,12 @@ function App() {
         harvest_date: formattedEndDate,
         location: formData.location.name,
       };
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("API Response:", data);
-
-      setApiResults(data);
+      // Use the api instance with AWS auth
+      const response = await api.post('default/calculate-risk', requestBody);
+      
+      console.log("API Response:", response.data);
+      setApiResults(response.data);
       setShowResults(true);
       setShowForm(true);
     } catch (error) {
