@@ -4,7 +4,7 @@ _This project proudly secured second place in the Syngenta Challenge at the STAR
 
 ## Overview
 
-**🌐 Live Demo:** [https://main.d31cznt5l141mg.amplifyapp.com/](https://main.d31cznt5l141mg.amplifyapp.com/)
+**🌐 Live Demo:** [https://main.defnmqmaba394.amplifyapp.com](https://main.defnmqmaba394.amplifyapp.com)
 
 This project leverages artificial intelligence to empower farmers in India and Brazil with tailored recommendations for biological products, optimizing crop health and promoting sustainability. By integrating environmental data, product information, and agronomic algorithms, the solution offers:
 
