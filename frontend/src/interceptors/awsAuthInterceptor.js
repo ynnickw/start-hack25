@@ -1,7 +1,7 @@
 import { SignatureV4 } from '@aws-sdk/signature-v4';
 import { Sha256 } from '@aws-crypto/sha256-browser';
 
-const region = 'us-east-1';
+const region = 'eu-central-1';
 const service = 'execute-api';
 
 export const createAwsAuthInterceptor = (credentials) => {
